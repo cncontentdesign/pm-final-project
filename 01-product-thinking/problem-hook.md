@@ -25,21 +25,21 @@ _The big-picture business risk. If the company does nothing for 12 months, what 
 
 ## 3. The moment of misery
 
-_The specific point where the product fails the user, forcing a manual workaround (Google, spreadsheets, group texts, a competitor)._
-
-> The user is currently forced to…
+>Frontline fleet coordinators are currently forced to use chaotic manual workarounds outside RouteLogic:
+Shadow Excel/Google Spreadsheets: Running secondary spreadsheets on a second monitor to manually log load numbers, driver assignments, and ETA updates, bypassing RouteLogic’s deeply nested multi-click menus.
+>
+>Analog Workarounds (Post-it Notes & Messenger Apps): Using sticky notes on monitors and quick WhatsApp or Slack messages directly to drivers to communicate real-time updates faster than updating RouteLogic's UI.
+>
+>Side-by-Side Competitor Pilots: Exporting raw route data into lightweight third-party dispatch tools or free trial alternatives to generate quick route updates during peak hours.
 
 ## 4. Problem hook
 
-_One urgent sentence fusing the business risk and the user pain — your pitch for why this is the most important thing to work on right now._
-
-> We must solve [business risk] by addressing [user pain]…
+We must solve the imminent churn of enterprise revenue to leaner competitors by addressing the administrative complexity and operational noise that forces frontline fleet coordinators into slow, manual workarounds.
 
 ## 5. Value proposition
 
-_Who it's for, the new value, and why it's urgent to launch now._
+For frontline fleet coordinators at enterprise accounts, we will deliver RouteLogic Velocity, a streamlined interface that eliminates operational noise and manual workarounds while preserving backend platform power, because key accounts are actively trialing leaner rivals, putting our largest enterprise contracts at immediate risk.
 
-> For **[who]**, we will **[value]** because **[urgent why]**.
 
 ## 6. Cold-read self-review
 
@@ -47,9 +47,9 @@ _Read your hook back as a skeptical stakeholder. If you don't feel the urgency, 
 
 | Question | Your answer |
 |---|---|
-| Is the business risk high-stakes enough to justify a new initiative? | _____ |
-| Is the moment of misery systemic, or just an edge case? | _____ |
-| Does the value proposition actually remove the obstacle? | _____ |
+| Is the business risk high-stakes enough to justify a new initiative? | This is an existential revenue threat rather than a minor inconvenience. In B2B logistics SaaS, enterprise account migrations carry massive switching costs. Once an enterprise fleet completes a pilot and migrates to a competitor, winning them back is nearly impossible, directly impacting Net Revenue Retention (NRR). |
+| Is the moment of misery systemic, or just an edge case? | This is a systemic problem affecting our core daily active user base. Frontline fleet coordinators make up 95% of our daily active users, so operational friction during peak dispatch windows directly degrades core platform usage and threatens account renewals at the executive level. |
+| Does the value proposition actually remove the obstacle? | The value proposition directly targets the core obstacle by resolving the tension between user needs and buyer requirements. RouteLogic Velocity strips away daily operational friction for frontline users while keeping the underlying backend enterprise features intact for account administrators. |
 
 ## 7. Finalized hypothesis _(complete in Module 3)_
 
