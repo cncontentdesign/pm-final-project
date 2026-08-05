@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RouteLogic Velocity — Future State Journey</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --panel:#ffffff; --ink:#141821; --muted:#5b6472;
+    --line:#e2e6ec; --accent:#2f6df6; --accent-soft:#e8f0ff;
+    --good:#0f9d6a; --good-soft:#e6f7f0; --chip:#eef1f6;
+    --shadow:0 1px 2px rgba(20,24,33,.06),0 6px 20px rgba(20,24,33,.06);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0f1218; --panel:#171b23; --ink:#eef1f6; --muted:#9aa4b2;
+      --line:#262c37; --accent:#5b8cff; --accent-soft:#1a2740;
+      --good:#3ddc9a; --good-soft:#0f2a20; --chip:#1e242f;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 22px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1218; --panel:#171b23; --ink:#eef1f6; --muted:#9aa4b2;
+    --line:#262c37; --accent:#5b8cff; --accent-soft:#1a2740;
+    --good:#3ddc9a; --good-soft:#0f2a20; --chip:#1e242f;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 22px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --bg:#f7f8fa; --panel:#ffffff; --ink:#141821; --muted:#5b6472;
+    --line:#e2e6ec; --accent:#2f6df6; --accent-soft:#e8f0ff;
+    --good:#0f9d6a; --good-soft:#e6f7f0; --chip:#eef1f6;
+    --shadow:0 1px 2px rgba(20,24,33,.06),0 6px 20px rgba(20,24,33,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1040px;margin:0 auto;padding:32px 24px 48px;}
+  header.top{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:26px;}
+  .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;}
+  h1{font-size:26px;margin:6px 0 10px;letter-spacing:-.01em;}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;}
+  @media(max-width:720px){.meta{grid-template-columns:1fr}}
+  .meta .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px;box-shadow:var(--shadow);}
+  .meta .lab{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px;}
+  .meta .val{font-size:13.5px;color:var(--ink);}
+
+  /* timeline rail */
+  .rail{position:relative;margin:8px 0 30px;padding-top:6px;}
+  .rail .track{position:absolute;left:0;right:0;top:34px;height:3px;
+    background:linear-gradient(90deg,var(--accent),var(--good));border-radius:3px;opacity:.5;}
+  .nodes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative;}
+  @media(max-width:720px){.nodes{grid-template-columns:1fr}.rail .track{display:none}}
+  .node{text-align:center;}
+  .dot{width:34px;height:34px;border-radius:50%;margin:0 auto;background:var(--panel);
+    border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:var(--accent);font-size:15px;box-shadow:var(--shadow);position:relative;z-index:2;}
+  .node:nth-child(4) .dot,.node:nth-child(3) .dot{border-color:var(--good);color:var(--good);}
+  .node .nm{font-size:12.5px;font-weight:700;margin-top:8px;}
+  .node .ph{font-size:11px;color:var(--muted);}
+
+  /* stage cards */
+  .stages{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  @media(max-width:720px){.stages{grid-template-columns:1fr}}
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+  .stage::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);}
+  .stage.win::before{background:var(--good);}
+  .stage h3{margin:0 0 2px;font-size:16px;display:flex;align-items:center;gap:8px;}
+  .stage .snum{font-size:11px;background:var(--accent-soft);color:var(--accent);
+    border-radius:6px;padding:2px 7px;font-weight:800;}
+  .stage.win .snum{background:var(--good-soft);color:var(--good);}
+  .row{margin-top:11px;}
+  .row .rl{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+  .ab{margin-top:3px;font-size:13.5px;}
+  .ab b{color:var(--accent);}
+  .stage.win .ab b{color:var(--good);}
+  .state{margin-top:3px;font-size:13px;font-style:italic;color:var(--ink);}
+  .pain{margin-top:3px;font-size:12.5px;color:var(--muted);}
+  .pain code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:11.5px;color:var(--ink);}
+
+  /* advantages */
+  .adv{margin-top:30px;border-top:1px solid var(--line);padding-top:22px;}
+  .adv h2{font-size:15px;letter-spacing:.02em;margin:0 0 14px;}
+  .advgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:720px){.advgrid{grid-template-columns:1fr}}
+  .acard{background:var(--good-soft);border:1px solid var(--line);border-radius:12px;padding:14px;}
+  .acard .vs{font-size:11px;font-weight:800;color:var(--good);letter-spacing:.06em;text-transform:uppercase;}
+  .acard p{margin:6px 0 0;font-size:13.5px;}
+  footer{margin-top:26px;font-size:11.5px;color:var(--muted);text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="kicker">Future-State Journey · Initiative Brief</div>
+    <h1>RouteLogic&nbsp;Velocity — From Shadow Workflow to a Single Trustworthy Board</h1>
+    <div class="meta">
+      <div class="card">
+        <div class="lab">Persona</div>
+        <div class="val">Mid-size 3PL dispatcher — keeps a live fleet routed correctly and knows, in real time, where every stop stands.</div>
+      </div>
+      <div class="card">
+        <div class="lab">Goal</div>
+        <div class="val">Reassign routes and read accurate delivery status off one trustworthy board — without a phone in the other hand.</div>
+      </div>
+      <div class="card">
+        <div class="lab">Strategy</div>
+        <div class="val">Reclaim operational simplicity: strip legacy noise and make the tool the fastest path for everyday work.</div>
+      </div>
+      <div class="card">
+        <div class="lab">Today's Workaround (replaced)</div>
+        <div class="val">A parallel WhatsApp group + voice calls run as "the real system" alongside a board they've learned to distrust.</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- visual timeline rail -->
+  <div class="rail">
+    <div class="track"></div>
+    <div class="nodes">
+      <div class="node"><div class="dot">1</div><div class="nm">Quiet Board</div><div class="ph">Log in</div></div>
+      <div class="node"><div class="dot">2</div><div class="nm">Instant Reroute</div><div class="ph">Reassign</div></div>
+      <div class="node"><div class="dot">3</div><div class="nm">Live Truth</div><div class="ph">Monitor</div></div>
+      <div class="node"><div class="dot">4</div><div class="nm">Retire the Hack</div><div class="ph">Trust</div></div>
+    </div>
+  </div>
+
+  <!-- stage cards -->
+  <div class="stages">
+    <div class="stage">
+      <h3><span class="snum">STAGE 1</span> The Quiet Board</h3>
+      <div class="row"><div class="rl">User Action</div>
+        <div class="ab">Opens Velocity to a decluttered board <b>&rarr; sees only live routing, noise gone.</b></div></div>
+      <div class="row"><div class="rl">Internal State</div>
+        <div class="state">"Finally — just the fleet, nothing to dig through."</div></div>
+      <div class="row"><div class="rl">Pain Point Addressed</div>
+        <div class="pain">Operational noise &amp; feature bloat burying core work <code>UXR-04</code> <code>BUG-2079</code></div></div>
+    </div>
+
+    <div class="stage">
+      <h3><span class="snum">STAGE 2</span> Instant Reroute</h3>
+      <div class="row"><div class="rl">User Action</div>
+        <div class="ab">Reassigns a route once <b>&rarr; driver is pushed the change in seconds.</b></div></div>
+      <div class="row"><div class="rl">Internal State</div>
+        <div class="state">"I changed it once and it's already on their phone."</div></div>
+      <div class="row"><div class="rl">Pain Point Addressed</div>
+        <div class="pain">8–15 min propagation, no push notification <code>BUG-2044</code> <code>UXR-02</code></div></div>
+    </div>
+
+    <div class="stage win">
+      <h3><span class="snum">STAGE 3</span> Live Truth</h3>
+      <div class="row"><div class="rl">User Action</div>
+        <div class="ab">Glances at the board <b>&rarr; reads real-time status she can act on.</b></div></div>
+      <div class="row"><div class="rl">Internal State</div>
+        <div class="state">"'Delivered' means delivered — I trust the screen again."</div></div>
+      <div class="row"><div class="rl">Pain Point Addressed</div>
+        <div class="pain">20–60 min stale status; "in progress" on done stops <code>BUG-2072</code> <code>UXR-09</code></div></div>
+    </div>
+
+    <div class="stage win">
+      <h3><span class="snum">STAGE 4</span> Retire the Hack</h3>
+      <div class="row"><div class="rl">User Action</div>
+        <div class="ab">Closes WhatsApp <b>&rarr; runs the shift from one source of truth.</b></div></div>
+      <div class="row"><div class="rl">Internal State</div>
+        <div class="state">"I don't need a second system — or a phone in my other hand."</div></div>
+      <div class="row"><div class="rl">Pain Point Addressed</div>
+        <div class="pain">Shadow WhatsApp "real system" &amp; churn signal <code>UXR-02</code> <code>UXR-10</code></div></div>
+    </div>
+  </div>
+
+  <!-- competitive advantages -->
+  <div class="adv">
+    <h2>Competitive Advantages Over the Manual Workaround</h2>
+    <div class="advgrid">
+      <div class="acard">
+        <div class="vs">vs. Double Entry</div>
+        <p>One entry propagates instantly — no re-typing every reassignment into WhatsApp.</p>
+      </div>
+      <div class="acard">
+        <div class="vs">vs. Manual Polling</div>
+        <p>The board self-updates in real time, ending the ping-each-driver status chase.</p>
+      </div>
+      <div class="acard">
+        <div class="vs">vs. Lost Data</div>
+        <p>Every route &amp; POD stays on-platform — structured, auditable, feeding admin reporting.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Value prop: <strong>RouteLogic Velocity</strong> — a streamlined interface that eliminates operational noise and manual workarounds while preserving backend platform power, defending enterprise contracts against leaner rivals.
+  </footer>
+</div>
+</body>
+</html>
