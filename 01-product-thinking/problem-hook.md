@@ -9,13 +9,19 @@
 
 **Path:** _StreamLine Spotlight (B2C) · RouteLogic Velocity (B2B) · my own initiative_
 
-_One line on why you picked it._
+RouteLogic - I work in B2B so this feels most relevant.
 
 ## 2. The strategic crisis
 
 _The big-picture business risk. If the company does nothing for 12 months, what happens to its market position?_
 
-> If we do nothing for 12 months, the company will…
+>If RouteLogic does nothing for 12 months, it will suffer a catastrophic shift from market leader to bloated legacy software, marked by high enterprise churn.
+>
+>Enterprise Account Churn: The largest enterprise accounts currently trialing leaner competitors will complete their pilot programs and migrate away, triggering a domino effect across mid-market accounts.
+>
+>CAC Surge & Sales Friction:Net Promoter Scores (NPS) among frontline coordinators will plummet, turning internal daily users into vocal dissenters during software renewals and sales evaluations.
+>
+>Reputational Re-positioning: RouteLogic will lose its identity as an innovative, high-velocity logistics engine and become permanently branded as expensive, slow administrative bloat.
 
 ## 3. The moment of misery
 
