@@ -6,7 +6,9 @@
 
 ## Finalized product hypothesis
 
-> Coordinators keep a parallel WhatsApp group because they can't trust the board (UXR-02, UXR-09), and the numbers back it up: about 69% stop using our tool right after route assignment, daily time lost to workarounds has tripled to 31 minutes, and Coordinator NPS has fallen 30 points to -12. My hypothesis is that restoring real-time trust in the core dispatch loop, meaning instant confirmed reassignments and stop status that matches what's happening on the ground, will pull live coordination back onto the platform for mid-size 3PL coordinators and cut that daily waste in half, which I'll measure by workflow completion (Open to Shift Handoff) climbing from 31% to at least 65%. I'll protect core-feature adoption (Dispatch Board 91%, Optimizer 85%) and manager Reporting CSAT (4.5) so a leaner frontline doesn't cost us the backend power buyers pay for, and I'll make the go/no-go call after a 90-day pilot on 2 or 3 accounts.
+> Coordinators use WhatsApp groups to manage changes and rerouting, because they can't trust the board (UXR-02, UXR-09), and the numbers back it up: about 69% stop using our tool right after route assignment, daily time lost to workarounds has tripled to 31 minutes, and Coordinator NPS has fallen 30 points to -12. 
+
+My hypothesis is that delivering real-time trust in the core of our product, through instant, confirmed, reassignments and accurate stop status that matches what's happening on the ground, will pull live coordination back onto the platform for mid-size 3PL coordinators and cut that daily wasted time in half. I'll look to measure by workflow completion (Open to Shift Handoff) climbing from 31% to at least 65%. I'll protect core-feature adoption (Dispatch Board 91%, Optimizer 85%) and manager Reporting CSAT (4.5) so a leaner frontline doesn't cost us the backend power buyers pay for, and I'll make the go/no-go call after a 90-day pilot on 2 or 3 enterprise accounts - we might well target some of those most at risk of churning.
 
 ## Success metrics
 
