@@ -53,8 +53,11 @@ _Read your hook back as a skeptical stakeholder. If you don't feel the urgency, 
 
 ## 7. Finalized hypothesis _(complete in Module 3)_
 
-> Based on [qual + quant evidence], I believe that [solving X] for [persona] will result in [outcome], as measured by a [X%] change in [success metric]. I will protect [guardrail metric] and make a go/no-go decision after [decision window].
+> Coordinators use WhatsApp groups to manage changes and rerouting, because they can't trust the board (UXR-02, UXR-09), and the numbers back it up: about 69% stop using our tool right after route assignment, daily time lost to workarounds has tripled to 31 minutes, and Coordinator NPS has fallen 30 points to -12.
+
+My hypothesis is that delivering real-time trust in the core of our product, through instant, confirmed, reassignments and accurate stop status that matches what's happening on the ground, will pull live coordination back onto the platform for mid-size 3PL coordinators and cut that daily wasted time in half. I'll look to measure by workflow completion (Open to Shift Handoff) climbing from 31% to at least 65%. I'll protect core-feature adoption (Dispatch Board 91%, Optimizer 85%) and manager Reporting CSAT (4.5) so a leaner frontline doesn't cost us the backend power buyers pay for, and I'll make the go/no-go call after a 90-day pilot on 2 or 3 enterprise accounts - we might well target some of those most at risk of churning.
+
 
 ## Link to full artifact
 
-_[link to your Problem Hook Builder export / Slide 1 of your deliverables deck]_
+01-product-thinking/pm-m1-problem-hook-ex1.md
