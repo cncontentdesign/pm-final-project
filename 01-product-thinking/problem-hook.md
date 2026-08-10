@@ -60,4 +60,4 @@ My hypothesis is that delivering real-time trust in the core of our product, thr
 
 ## Link to full artifact
 
-01-product-thinking/pm-m1-problem-hook-ex1.md
+01-product-thinking/problem-hook.md
