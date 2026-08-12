@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RouteLogic Velocity · Product Roadmap</title>
+<style>
+  :root{
+    --bg:#0f1420;
+    --bg-grad-1:#141b2d;
+    --bg-grad-2:#0c101a;
+    --panel:#161d2e;
+    --panel-2:#1c2438;
+    --card:#1e263a;
+    --card-hover:#242e46;
+    --border:#2a3350;
+    --text:#e8ecf5;
+    --text-dim:#9aa4bd;
+    --text-faint:#6b7590;
+
+    /* Quadrant colours */
+    --q-quickwin:#22c55e;
+    --q-quickwin-bg:rgba(34,197,94,.12);
+    --q-bigbet:#3b82f6;
+    --q-bigbet-bg:rgba(59,130,246,.12);
+    --q-fillin:#f59e0b;
+    --q-fillin-bg:rgba(245,158,11,.12);
+    --q-timesink:#ef4444;
+    --q-timesink-bg:rgba(239,68,68,.12);
+
+    /* Lane accents */
+    --now:#f43f5e;
+    --next:#8b5cf6;
+    --later:#38bdf8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 800px at 15% -10%,var(--bg-grad-1),var(--bg-grad-2)) ,var(--bg);
+    color:var(--text);
+    line-height:1.5;
+    min-height:100vh;
+    padding:32px 24px 64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1320px;margin:0 auto}
+
+  /* Header */
+  header{margin-bottom:28px}
+  .brandline{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .logo{
+    width:44px;height:44px;border-radius:12px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--now),var(--next) 55%,var(--later));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:20px;color:#fff;
+    box-shadow:0 6px 20px rgba(139,92,246,.35);
+  }
+  h1{font-size:26px;font-weight:750;letter-spacing:-.4px}
+  .subtitle{color:var(--text-dim);font-size:14px;margin-top:2px}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .chip{
+    background:var(--panel);border:1px solid var(--border);border-radius:999px;
+    padding:6px 14px;font-size:12.5px;color:var(--text-dim);
+    display:flex;align-items:center;gap:7px;
+  }
+  .chip b{color:var(--text);font-weight:600}
+  .chip .dot{width:8px;height:8px;border-radius:50%}
+
+  /* Legend / filter */
+  .legend{
+    display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;align-items:center;
+  }
+  .legend-label{font-size:12px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;margin-right:2px}
+  .filter{
+    border:1px solid var(--border);background:var(--panel);color:var(--text-dim);
+    border-radius:999px;padding:6px 13px;font-size:12.5px;cursor:pointer;
+    display:flex;align-items:center;gap:8px;transition:all .15s ease;font-weight:500;
+    user-select:none;
+  }
+  .filter:hover{border-color:var(--text-faint);color:var(--text)}
+  .filter .sw{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .filter.active{color:var(--text);border-color:transparent;box-shadow:0 0 0 1.5px currentColor inset}
+  .filter[data-q="all"].active{color:var(--text);box-shadow:0 0 0 1.5px var(--text-faint) inset}
+  .filter[data-q="quickwin"].active{color:var(--q-quickwin)}
+  .filter[data-q="bigbet"].active{color:var(--q-bigbet)}
+  .filter[data-q="fillin"].active{color:var(--q-fillin)}
+  .filter[data-q="timesink"].active{color:var(--q-timesink)}
+
+  /* Lanes */
+  .lanes{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px;
+  }
+  @media(max-width:960px){.lanes{grid-template-columns:1fr}}
+  .lane{
+    background:var(--panel);border:1px solid var(--border);border-radius:16px;
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .lane-head{padding:16px 18px 14px;border-bottom:1px solid var(--border);position:relative}
+  .lane-head::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .lane[data-lane="now"] .lane-head::before{background:var(--now)}
+  .lane[data-lane="next"] .lane-head::before{background:var(--next)}
+  .lane[data-lane="later"] .lane-head::before{background:var(--later)}
+  .lane-title{display:flex;align-items:baseline;gap:10px}
+  .lane-title h2{font-size:16px;font-weight:750;letter-spacing:.02em}
+  .lane[data-lane="now"] .lane-title h2{color:var(--now)}
+  .lane[data-lane="next"] .lane-title h2{color:var(--next)}
+  .lane[data-lane="later"] .lane-title h2{color:var(--later)}
+  .lane-count{
+    margin-left:auto;font-size:12px;color:var(--text-faint);
+    background:var(--panel-2);border-radius:999px;padding:2px 9px;
+  }
+  .lane-sub{font-size:12.5px;color:var(--text-dim);margin-top:3px}
+  .lane-body{padding:14px;display:flex;flex-direction:column;gap:12px;flex:1}
+
+  /* Cards */
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:14px 15px;cursor:default;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,opacity .2s ease;
+    position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;opacity:.9}
+  .card[data-q="quickwin"]::before{background:var(--q-quickwin)}
+  .card[data-q="bigbet"]::before{background:var(--q-bigbet)}
+  .card[data-q="fillin"]::before{background:var(--q-fillin)}
+  .card[data-q="timesink"]::before{background:var(--q-timesink)}
+  .card:hover{transform:translateY(-2px);background:var(--card-hover);border-color:var(--text-faint);box-shadow:0 10px 28px rgba(0,0,0,.35)}
+  .card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+  .card-id{
+    font-size:11px;font-weight:700;color:var(--text-faint);
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:var(--panel-2);border-radius:6px;padding:2px 6px;flex:0 0 auto;margin-top:1px;
+  }
+  .card-name{font-size:14.5px;font-weight:650;letter-spacing:-.1px;line-height:1.35}
+  .badge{
+    margin-left:auto;flex:0 0 auto;font-size:10.5px;font-weight:700;
+    padding:3px 9px;border-radius:999px;white-space:nowrap;letter-spacing:.02em;
+    display:flex;align-items:center;gap:5px;
+  }
+  .badge .bd{width:7px;height:7px;border-radius:50%}
+  .badge[data-q="quickwin"]{color:var(--q-quickwin);background:var(--q-quickwin-bg)}
+  .badge[data-q="quickwin"] .bd{background:var(--q-quickwin)}
+  .badge[data-q="bigbet"]{color:var(--q-bigbet);background:var(--q-bigbet-bg)}
+  .badge[data-q="bigbet"] .bd{background:var(--q-bigbet)}
+  .badge[data-q="fillin"]{color:var(--q-fillin);background:var(--q-fillin-bg)}
+  .badge[data-q="fillin"] .bd{background:var(--q-fillin)}
+  .badge[data-q="timesink"]{color:var(--q-timesink);background:var(--q-timesink-bg)}
+  .badge[data-q="timesink"] .bd{background:var(--q-timesink)}
+  .rationale{font-size:12.8px;color:var(--text-dim);line-height:1.5}
+  .rationale .lbl{color:var(--text-faint);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.08em;display:block;margin-bottom:3px}
+
+  .card.dim{opacity:.18;filter:saturate(.4)}
+
+  /* Cut list */
+  .cut{
+    margin-top:32px;background:var(--panel);border:1px solid var(--border);
+    border-radius:16px;padding:18px 20px;position:relative;
+  }
+  .cut-head{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+  .cut-head h2{font-size:16px;font-weight:750;color:var(--text-dim)}
+  .cut-icon{
+    width:26px;height:26px;border-radius:8px;background:rgba(239,68,68,.14);
+    color:var(--q-timesink);display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto;
+  }
+  .cut-sub{font-size:12.5px;color:var(--text-faint);margin-bottom:14px}
+  .cut-body{display:flex;flex-direction:column;gap:12px}
+  .cut-card{
+    background:transparent;border:1px dashed var(--border);border-radius:12px;padding:13px 15px;
+    display:flex;align-items:flex-start;gap:11px;
+  }
+  .cut-card .card-name{color:var(--text-dim);text-decoration:line-through;text-decoration-color:var(--text-faint)}
+  .cut-card .rationale{color:var(--text-faint)}
+
+  footer{margin-top:34px;text-align:center;color:var(--text-faint);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brandline">
+      <div class="logo">RV</div>
+      <div>
+        <h1>RouteLogic Velocity</h1>
+        <div class="subtitle">Product Roadmap · Now / Next / Later</div>
+      </div>
+    </div>
+    <div class="meta">
+      <span class="chip"><span class="dot" style="background:var(--now)"></span><b>NOW</b> Pilot · 4 weeks · 3 accounts</span>
+      <span class="chip"><span class="dot" style="background:var(--next)"></span><b>NEXT</b> GA Release · weeks 5–8</span>
+      <span class="chip"><span class="dot" style="background:var(--later)"></span><b>LATER</b> Backlog</span>
+      <span class="chip">👥 <b>Team</b> 2 eng · 1 designer · 1 CS lead</span>
+    </div>
+
+    <div class="legend">
+      <span class="legend-label">Quadrant</span>
+      <div class="filter active" data-q="all">All</div>
+      <div class="filter" data-q="quickwin"><span class="sw" style="background:var(--q-quickwin)"></span>Quick Win · High value / Low effort</div>
+      <div class="filter" data-q="bigbet"><span class="sw" style="background:var(--q-bigbet)"></span>Big Bet · High value / High effort</div>
+      <div class="filter" data-q="fillin"><span class="sw" style="background:var(--q-fillin)"></span>Fill-In · Low value / Low effort</div>
+      <div class="filter" data-q="timesink"><span class="sw" style="background:var(--q-timesink)"></span>Time Sink · Low value / High effort</div>
+    </div>
+  </header>
+
+  <div class="lanes">
+
+    <!-- NOW -->
+    <section class="lane" data-lane="now">
+      <div class="lane-head">
+        <div class="lane-title"><h2>NOW</h2><span class="lane-count">2</span></div>
+        <div class="lane-sub">Pilot · 4 weeks · 3 accounts</div>
+      </div>
+      <div class="lane-body">
+
+        <article class="card" data-q="bigbet">
+          <div class="card-top">
+            <span class="card-id">B3</span>
+            <span class="card-name">Shift Handoff Wizard</span>
+            <span class="badge" data-q="bigbet"><span class="bd"></span>Big Bet</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>Attacks the shift handoff gap (31%) — this is our primary metric, so it goes Now even though it's not quite a quick win.</div>
+        </article>
+
+        <article class="card" data-q="quickwin">
+          <div class="card-top">
+            <span class="card-id">B6</span>
+            <span class="card-name">Driver Alert Notifications</span>
+            <span class="badge" data-q="quickwin"><span class="bd"></span>Quick Win</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>Push on route changes is the direct fix to the 8–15 min reassignment lag — the gap that sends coordinators to WhatsApp.</div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- NEXT -->
+    <section class="lane" data-lane="next">
+      <div class="lane-head">
+        <div class="lane-title"><h2>NEXT</h2><span class="lane-count">4</span></div>
+        <div class="lane-sub">GA Release · weeks 5–8</div>
+      </div>
+      <div class="lane-body">
+
+        <article class="card" data-q="quickwin">
+          <div class="card-top">
+            <span class="card-id">B1</span>
+            <span class="card-name">One-Click Compliance Checklist</span>
+            <span class="badge" data-q="quickwin"><span class="bd"></span>Quick Win</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>Low effort, big time saving — but less urgent than the trust &amp; handoff work.</div>
+        </article>
+
+        <article class="card" data-q="bigbet">
+          <div class="card-top">
+            <span class="card-id">B2</span>
+            <span class="card-name">Smart Daily Report Auto-Fill</span>
+            <span class="badge" data-q="bigbet"><span class="bd"></span>Big Bet</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>We lose a lot of users (18%) at the report stage, but it's less urgent than what comes before — and it's significant effort.</div>
+        </article>
+
+        <article class="card" data-q="bigbet">
+          <div class="card-top">
+            <span class="card-id">B4</span>
+            <span class="card-name">Mobile-First Coordinator Dashboard</span>
+            <span class="badge" data-q="bigbet"><span class="bd"></span>Big Bet</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>High value but high effort — too much for Now.</div>
+        </article>
+
+        <article class="card" data-q="fillin">
+          <div class="card-top">
+            <span class="card-id">B5</span>
+            <span class="card-name">Step Progress Indicator</span>
+            <span class="badge" data-q="fillin"><span class="bd"></span>Fill-In</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>Low effort, but won't fix our moment of misery on its own.</div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- LATER -->
+    <section class="lane" data-lane="later">
+      <div class="lane-head">
+        <div class="lane-title"><h2>LATER</h2><span class="lane-count">3</span></div>
+        <div class="lane-sub">Backlog</div>
+      </div>
+      <div class="lane-body">
+
+        <article class="card" data-q="timesink">
+          <div class="card-top">
+            <span class="card-id">B7</span>
+            <span class="card-name">Contextual AI ETA Display</span>
+            <span class="badge" data-q="timesink"><span class="bd"></span>Time Sink</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>Stays on the roadmap to mollify sales, but not Now/Next given low adoption and more urgent work to fix the core board.</div>
+        </article>
+
+        <article class="card" data-q="fillin">
+          <div class="card-top">
+            <span class="card-id">B9</span>
+            <span class="card-name">Compliance Audit Trail Export</span>
+            <span class="badge" data-q="fillin"><span class="bd"></span>Fill-In</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>Regulatory audits aren't a primary concern for coordinators.</div>
+        </article>
+
+        <article class="card" data-q="fillin">
+          <div class="card-top">
+            <span class="card-id">B10</span>
+            <span class="card-name">In-App Coordinator Training</span>
+            <span class="badge" data-q="fillin"><span class="bd"></span>Fill-In</span>
+          </div>
+          <div class="rationale"><span class="lbl">Rationale</span>Training should wait until we've fixed the major board issues — training on something slow/unreliable won't move the dial.</div>
+        </article>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- CUT LIST -->
+  <section class="cut">
+    <div class="cut-head">
+      <span class="cut-icon">✂</span>
+      <h2>Cut List</h2>
+    </div>
+    <div class="cut-sub">Deliberately out of scope for this cycle.</div>
+    <div class="cut-body">
+      <div class="cut-card">
+        <span class="card-id">B8</span>
+        <div>
+          <div class="card-name">Fleet Analytics Manager View</div>
+          <div class="rationale" style="margin-top:6px">Exec features aren't a problem we're solving between Now and Later — high effort for the wrong userbase, given where we see churn risk.</div>
+        </div>
+        <span class="badge" data-q="timesink" style="margin-left:auto"><span class="bd"></span>Time Sink</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>RouteLogic Velocity · prioritized by value vs. effort · click a quadrant above to filter</footer>
+
+</div>
+
+<script>
+  const filters = document.querySelectorAll('.filter');
+  const cards = document.querySelectorAll('.lane .card');
+  filters.forEach(f=>{
+    f.addEventListener('click',()=>{
+      filters.forEach(x=>x.classList.remove('active'));
+      f.classList.add('active');
+      const q = f.dataset.q;
+      cards.forEach(c=>{
+        c.classList.toggle('dim', q!=='all' && c.dataset.q!==q);
+      });
+    });
+  });
+</script>
+</body>
+</html>
