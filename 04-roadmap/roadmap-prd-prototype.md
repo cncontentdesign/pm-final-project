@@ -16,30 +16,30 @@ Simplified PRD — B6 Driver Alert Notifications
 Title: Driver Alert Notifications — Push on Route Changes · Author: Me · Status: Draft · Target: High-Fidelity Prototype (useState-only, no backend)
 
 1. THE BIG PICTURE
-Vision: Every route reassignment reaches the affected driver and comes back confirmed in under a minute — so the 3PL dispatcher trusts the board again and never opens WhatsApp to check.
+Vision: Every route reassignment reaches the affected driver and comes back confirmed in under a minute — so the 3PL Coordinator trusts the board again and never opens WhatsApp to check.
 
 Press Release
 
-RouteLogic Velocity today closes the gap that turned its dispatch board into a screen people learned to disbelieve. When a dispatcher reassigns a route, the affected driver now gets an instant, actionable alert — what changed, which stop, by when — and taps Got it. The dispatcher watches that acknowledgement land on the board in seconds, not the 8–15 minutes it used to take (BUG-2044).
+RouteLogic Velocity today closes the gap that turned its dispatch board into a screen people learned to disbelieve. When a Coordinator reassigns a route, the affected driver now gets an instant, actionable alert — what changed, which stop, by when — and taps Got it. The Coordinator watches that acknowledgement land on the board in seconds, not the 8–15 minutes it used to take (BUG-2044).
 
-For the mid-size 3PL dispatcher, this ends the "phone in the other hand" workflow. Today a reassignment fires into a void, so they re-send the same change over WhatsApp and wait for a manual reply to confirm it was seen — running the app and a chat group as two parallel systems all shift (UXR-02: "We keep a WhatsApp group as the real system"). Now the confirmation lives on the board itself, and the workaround that had become the real system of record goes away.
+For the mid-size 3PL Coordinator, this ends the "phone in the other hand" workflow. Today a reassignment fires into a void, so they re-send the same change over WhatsApp and wait for a manual reply to confirm it was seen — running the app and a chat group as two parallel systems all shift (UXR-02: "We keep a WhatsApp group as the real system"). Now the confirmation lives on the board itself, and the workaround that had become the real system of record goes away.
 
 Success Metrics
 
 Primary: Reassignment→acknowledgement time drops from 8–15 min to < 60s (median) — directly cutting daily time lost to manual workarounds / route-assign time.
-Guardrail: Coordinator core-feature (Board) adoption holds at ≥ 91% — the alert must not pull dispatchers off the board.
+Guardrail: Coordinator core-feature (Board) adoption holds at ≥ 91% — the alert must not pull Coordinator off the board.
 2. THE DETAILS
 User Stories
 
-As a 3PL dispatcher, I want every reassignment I commit to alert only the affected driver instantly, so that I stop re-sending changes over WhatsApp to confirm they landed.
+As a 3PL Coordinator, I want every reassignment I commit to alert only the affected driver instantly, so that I stop re-sending changes over WhatsApp to confirm they landed.
 AC: Committing a reassignment fires an alert to that driver alone (never the fleet); board status = Sent within 2s.
 As a driver, I want an alert that says exactly what changed and by when, so that I act without calling the office back.
 AC: Card shows changed stop, new stop/ETA window, timestamp; single Got it records ack.
-As a 3PL dispatcher, I want to see acknowledgement land on the board, so that I know the driver has the correct route without leaving the screen.
+As a 3PL Coordinator, I want to see acknowledgement land on the board, so that I know the driver has the correct route without leaving the screen.
 AC: Status advances Sent → Delivered → Acknowledged with time-to-ack; no WhatsApp/phone step needed.
 Screens to Build (exactly 3)
 
-Entry point — Dispatcher Board / Reassign. Route list per driver, stop rows with status chips, Reassign driver control, driver picker, Confirm change modal.
+Entry point — Coordinator Board / Reassign. Route list per driver, stop rows with status chips, Reassign driver control, driver picker, Confirm change modal.
 Feature core — Driver Alert (phone view). Simulated Android push banner; alert card with change summary (added/removed/reordered stop), new stop + ETA window, timestamp; large Got it button.
 Success/confirmation — Ack Tracker (back on board). Status timeline chip (Sent→Delivered→Acknowledged), time-to-ack readout, green "Confirmed — no follow-up needed" state, toast ("Driver acknowledged in 42s").
 Functional Requirements (from MUST HAVE)
