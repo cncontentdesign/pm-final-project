@@ -13,7 +13,7 @@ Device push-token registration + permission handling
 Driver acknowledgement — one-tap "Got it" - moved to SHould. Cross-platform lock-screen action APIs can be brittle. Acknowledge on Open is a cheaper/more reliable substitute
 
 ## Generate your Simplified PRD
-- **One thing my PRD makes explicit that a vague brief would have missed:** My PRD makes explicit that the alert is not adequate/complete/MVP without a confirmed acknowledgement the dispatcher can see on the board. The moment of misery isn't the missing notification, it's that the dispatcher can't trust the change has been seen by the driver, so they go to WhatsApp to verify.
+- **One thing my PRD makes explicit that a vague brief would have missed:** My PRD makes explicit that the alert is not adequate/complete/MVP without a confirmed acknowledgement the Coordinator can see on the board. The moment of misery isn't the missing notification, it's that the Coordinator can't trust the change has been seen by the driver, so they go to WhatsApp to verify.
 
 ## Prompt-to-prototype sprint
 - **Where did the prototype reveal a gap in my PRD logic? (what I had to update):** My "amber = not acknowledged" state didn't work on screen — you can't tell a 10-second wait from a 10-minute one, which is the whole point. With more prompts / dev time we would need to add a time since sent or age to each alert. A time signal here is a Must.
