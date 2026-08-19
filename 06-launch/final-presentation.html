@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RouteLogic Velocity — PM Final Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Lato:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07162C;
+    --fg:#ffffff;
+    --muted:rgba(255,255,255,0.62);
+    --muted-strong:rgba(255,255,255,0.82);
+    --orange:#fb923c;
+    --orange-soft:#fdba74;
+    --cyan:#22d3ee;
+    --teal:#34d399;
+    --blue:#60a5fa;
+    --violet:#a78bfa;
+    --pink:#f472b6;
+    --line:rgba(251,146,60,0.25);
+    --line-soft:rgba(255,255,255,0.10);
+    --card:rgba(255,255,255,0.03);
+    --card-2:rgba(255,255,255,0.05);
+    --shadow:0 24px 60px -24px rgba(0,0,0,0.8);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Lato',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    scroll-snap-type:y mandatory;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{font-family:'Poppins',sans-serif;margin:0;line-height:1.08;letter-spacing:-0.01em}
+  p{margin:0}
+  a{color:inherit}
+
+  /* progress bar */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;
+    background:linear-gradient(90deg,var(--orange),var(--cyan));
+    z-index:100;transition:width .15s ease-out;
+    box-shadow:0 0 18px rgba(251,146,60,0.6);
+  }
+
+  /* dot nav */
+  #dots{
+    position:fixed;right:22px;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:14px;z-index:100;
+  }
+  #dots a{
+    width:11px;height:11px;border-radius:50%;
+    border:1px solid rgba(255,255,255,0.35);
+    background:transparent;display:block;transition:all .2s ease;
+    position:relative;
+  }
+  #dots a:hover{border-color:var(--orange);transform:scale(1.2)}
+  #dots a.active{background:var(--orange);border-color:var(--orange);box-shadow:0 0 12px var(--orange)}
+  #dots a span{
+    position:absolute;right:20px;top:50%;transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;
+    white-space:nowrap;color:var(--muted);opacity:0;pointer-events:none;transition:opacity .2s;
+    background:rgba(7,22,44,0.9);padding:3px 8px;border-radius:6px;border:1px solid var(--line-soft);
+  }
+  #dots a:hover span{opacity:1}
+
+  /* sections */
+  section{
+    min-height:100vh;scroll-snap-align:start;
+    padding:64px 88px;position:relative;
+    display:flex;flex-direction:column;justify-content:center;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .slide-no{
+    position:absolute;top:34px;right:88px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;
+    color:var(--muted);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;text-transform:uppercase;
+    letter-spacing:0.12em;color:var(--orange-soft);font-size:13px;font-weight:500;
+    display:flex;align-items:center;gap:10px;margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--orange);display:inline-block}
+
+  .wrap{max-width:1220px;width:100%;margin:0 auto}
+
+  /* generic cards */
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:24px 26px;backdrop-filter:blur(2px);
+  }
+  .card.tile{box-shadow:var(--shadow)}
+  .grid{display:grid;gap:18px}
+
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .lead{color:var(--muted-strong);font-size:17px;line-height:1.6}
+  .small{font-size:14px;line-height:1.55;color:var(--muted-strong)}
+  .mono{font-family:'IBM Plex Mono',monospace}
+
+  /* pills */
+  .pill{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em;
+    padding:7px 13px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(251,146,60,0.06);color:var(--fg);
+  }
+  .pill.dot::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--orange)}
+  .pills{display:flex;flex-wrap:wrap;gap:9px}
+
+  /* callout */
+  .callout{
+    border-left:3px solid var(--orange);
+    background:linear-gradient(90deg,rgba(251,146,60,0.10),rgba(251,146,60,0.02));
+    border-radius:0 14px 14px 0;padding:20px 24px;color:var(--muted-strong);
+    font-size:15px;line-height:1.6;
+  }
+  .callout.bad{border-left-color:var(--pink);background:linear-gradient(90deg,rgba(244,114,182,0.12),rgba(244,114,182,0.02))}
+  .callout.good{border-left-color:var(--teal);background:linear-gradient(90deg,rgba(52,211,153,0.12),rgba(52,211,153,0.02))}
+
+  /* tables */
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.45}
+  th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-soft);font-weight:500}
+  td.metric{font-family:'IBM Plex Mono',monospace;color:var(--fg)}
+  tr:last-child td{border-bottom:none}
+
+  /* metric tiles */
+  .stat{font-family:'Poppins';font-weight:800;line-height:1}
+  .metric-row{display:flex;gap:16px;flex-wrap:wrap}
+  .metric-tile{
+    flex:1;min-width:150px;background:var(--card-2);border:1px solid var(--line);
+    border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);
+  }
+  .metric-tile .n{font-family:'Poppins';font-weight:800;font-size:32px;line-height:1}
+  .metric-tile .l{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--muted);margin-top:8px;line-height:1.4}
+  .arrow{color:var(--orange)}
+
+  /* columns */
+  .cols{display:grid;gap:18px}
+  .col-head{font-family:'Poppins';font-weight:700;font-size:15px;display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .col-head .tag{font-family:'IBM Plex Mono';font-size:10px;padding:3px 8px;border-radius:6px}
+  .item{font-size:13px;line-height:1.45;color:var(--muted-strong);padding:9px 0;border-bottom:1px dashed var(--line-soft)}
+  .item:last-child{border-bottom:none}
+
+  /* journey map */
+  .journey{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:14px;position:relative}
+  .jstep{padding:14px 12px;border-top:2px solid var(--line-soft);position:relative}
+  .jstep .num{font-family:'IBM Plex Mono';font-size:10px;color:var(--muted);letter-spacing:.1em}
+  .jstep .t{font-family:'Poppins';font-weight:600;font-size:13px;margin:5px 0 6px}
+  .jstep .d{font-size:11.5px;color:var(--muted);line-height:1.4}
+  .jstep.misery{border-top-color:var(--pink)}
+  .jstep.misery .t{color:var(--pink)}
+  .jstep .dotmark{position:absolute;top:-6px;left:12px;width:10px;height:10px;border-radius:50%;background:var(--line-soft)}
+  .jstep.misery .dotmark{background:var(--pink);box-shadow:0 0 10px var(--pink)}
+  .misery-flag{
+    display:inline-flex;align-items:center;gap:6px;margin-top:8px;
+    font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.06em;color:var(--pink);
+    border:1px solid rgba(244,114,182,0.4);padding:3px 8px;border-radius:999px;background:rgba(244,114,182,0.08)
+  }
+
+  /* buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'Poppins';font-weight:700;font-size:14px;
+    padding:13px 22px;border-radius:12px;text-decoration:none;
+    background:linear-gradient(135deg,var(--orange),#f97316);color:#0b1220;
+    box-shadow:0 14px 30px -10px rgba(251,146,60,0.6);transition:transform .15s ease,box-shadow .15s ease;
+    border:1px solid rgba(255,255,255,0.15);
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 20px 40px -10px rgba(251,146,60,0.75)}
+  .btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line);box-shadow:none}
+  .btn.ghost:hover{background:rgba(251,146,60,0.08)}
+  .btn svg{width:16px;height:16px}
+
+  /* cover */
+  #cover{background:
+    radial-gradient(900px 600px at 82% 12%,rgba(251,146,60,0.16),transparent 60%),
+    radial-gradient(700px 500px at 12% 88%,rgba(34,211,238,0.12),transparent 60%);
+  }
+  #cover .badge{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.08em;
+    padding:8px 15px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(251,146,60,0.07);color:var(--orange-soft);margin-bottom:26px;
+  }
+  #cover h1{font-size:clamp(42px,6vw,84px);font-weight:900;letter-spacing:-0.03em;max-width:16ch}
+  #cover h1 em{font-style:normal;background:linear-gradient(120deg,var(--orange),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+  #cover .pitch{font-size:clamp(18px,2vw,24px);color:var(--muted-strong);max-width:60ch;margin-top:22px;line-height:1.5}
+  #cover .meta{display:flex;flex-wrap:wrap;gap:14px 34px;margin-top:34px;align-items:center}
+  #cover .meta .who{font-family:'IBM Plex Mono';font-size:13px;color:var(--muted)}
+  #cover .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
+
+  .two{display:grid;grid-template-columns:1.05fr 0.95fr;gap:22px}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .title-lg{font-size:clamp(30px,4vw,52px);font-weight:800}
+  .section-head{margin-bottom:26px}
+
+  .evidence-q{font-family:'Lato';font-style:italic;color:var(--fg);font-size:14px;line-height:1.5}
+  .tagline{color:var(--muted);font-size:12px;font-family:'IBM Plex Mono';margin-top:6px}
+
+  .chip{font-family:'IBM Plex Mono';font-size:10.5px;padding:4px 9px;border-radius:7px;border:1px solid var(--line-soft)}
+  .chip.sent{color:var(--orange-soft);border-color:rgba(251,146,60,0.4);background:rgba(251,146,60,0.08)}
+  .chip.delivered{color:var(--blue);border-color:rgba(96,165,250,0.4);background:rgba(96,165,250,0.08)}
+  .chip.ack{color:var(--teal);border-color:rgba(52,211,153,0.4);background:rgba(52,211,153,0.08)}
+
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .flow .sep{color:var(--muted)}
+
+  .rule-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--line-soft)}
+  .rule-row:last-child{border-bottom:none}
+  .rule-badge{font-family:'IBM Plex Mono';font-size:10px;font-weight:500;padding:4px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0}
+  .ship{color:var(--teal);background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.35)}
+  .iterate{color:var(--orange-soft);background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.35)}
+  .kill{color:var(--pink);background:rgba(244,114,182,0.1);border:1px solid rgba(244,114,182,0.35)}
+
+  .thanks{background:
+    radial-gradient(800px 600px at 50% 30%,rgba(251,146,60,0.14),transparent 60%),
+    radial-gradient(600px 500px at 80% 90%,rgba(167,139,250,0.10),transparent 60%);
+    text-align:center;align-items:center;
+  }
+  .thanks h2{font-size:clamp(38px,5vw,68px);font-weight:900}
+  .submit-pill{
+    display:inline-flex;align-items:center;gap:12px;margin-top:8px;
+    font-family:'Poppins';font-weight:700;font-size:15px;
+    padding:15px 26px;border-radius:999px;
+    background:linear-gradient(135deg,var(--orange),#f97316);color:#0b1220;
+    box-shadow:0 18px 40px -12px rgba(251,146,60,0.7);
+  }
+
+  .hl{color:var(--orange-soft);font-weight:700}
+  .hlc{color:var(--cyan)}
+  .hlt{color:var(--teal)}
+
+  @media (max-width:960px){
+    section{padding:54px 26px}
+    .slide-no,.section-head .eyebrow{}
+    .two,.three,.journey{grid-template-columns:1fr}
+    #dots{display:none}
+    .slide-no{right:26px}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<nav id="dots"></nav>
+
+<!-- 1. COVER -->
+<section id="s1" data-label="Cover">
+  <div class="wrap">
+    <span class="badge">◆ Product School · Final Project</span>
+    <h1>RouteLogic <em>Velocity</em>, A Frontline-First Dispatch View</h1>
+    <p class="pitch">Strip the admin clutter into one real-time dispatch view so fleet coordinators reroute in seconds, not screens.</p>
+    <div class="meta">
+      <span class="who">Chris Newland &nbsp;·&nbsp; Product-management-aug03-26-weekdays</span>
+    </div>
+    <div class="cta">
+      <a class="btn" href="https://lovable.dev/preview/PTPMDfnUTGPSNd61Xy8ugGhYBULXiKi6" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        View prototype
+      </a>
+      <a class="btn ghost" href="https://github.com/cncontentdesign/pm-final-project/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+        Repo
+      </a>
+    </div>
+    <p class="tagline">github.com/cncontentdesign/pm-final-project</p>
+  </div>
+</section>
+
+<!-- 2. STRATEGY -->
+<section id="s2" data-label="Strategy">
+  <span class="slide-no">SLIDE 5 / 10</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Strategy · Problem &amp; Value</div>
+      <h2 class="title-lg">The screen built for truth became the one they disbelieve</h2>
+    </div>
+    <div class="two">
+      <div class="grid" style="align-content:start">
+        <div class="card tile">
+          <div class="kicker" style="margin-bottom:10px;color:var(--pink)">The problem hook</div>
+          <p class="small">Fleet coordinators no longer trust their own dispatch board. A reassignment takes <span class="hl">8–15 minutes</span> to reach a driver with no push, and delivered stops still read "in progress" an hour later. So <span class="hl">~69% abandon</span> the tool right after assigning routes, daily time lost to WhatsApp workarounds has tripled to <span class="hl">31 minutes</span>, and Coordinator NPS has cratered 30 points to <span class="hl">-12</span>. The one screen built to give real-time truth has become the screen they've learned to disbelieve — and leaner rivals are already circling our largest enterprise contracts.</p>
+        </div>
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px;color:var(--cyan)">Value proposition</div>
+          <p class="small">For frontline fleet coordinators at enterprise accounts, we will deliver <span class="hlc">RouteLogic Velocity</span>, a streamlined interface that eliminates operational noise and manual workarounds while preserving backend platform power, because key accounts are actively trialing leaner rivals, putting our largest enterprise contracts at immediate risk.</p>
+        </div>
+      </div>
+
+      <div class="grid" style="align-content:start">
+        <div class="metric-row">
+          <div class="metric-tile"><div class="n" style="color:var(--pink)">69%</div><div class="l">abandon after<br>route assignment</div></div>
+          <div class="metric-tile"><div class="n" style="color:var(--orange)">31<span style="font-size:16px">min</span></div><div class="l">daily time lost<br>(tripled)</div></div>
+          <div class="metric-tile"><div class="n" style="color:var(--violet)">-12</div><div class="l">Coordinator NPS<br>(down 30 pts)</div></div>
+        </div>
+        <div class="card tile" style="border-color:rgba(251,146,60,0.45)">
+          <div class="eyebrow" style="margin-bottom:12px">The data-backed hypothesis</div>
+          <p class="small" style="color:var(--fg)">Delivering <span class="hl">real-time trust in the core of the product</span> — instant, confirmed reassignments and accurate stop status that matches the ground — will pull live coordination back onto the platform for mid-size 3PL coordinators and <span class="hl">cut daily wasted time in half</span>.</p>
+          <div class="callout" style="margin-top:16px">
+            North-star: dispatch-workflow completion (Open → Shift Handoff) climbs <span class="hl">31% → 65%+</span>. Guardrails held: Board 91%, Optimizer 85%, Manager Reporting CSAT 4.5. Go/no-go after a <span class="hl">90-day pilot</span> on 2–3 enterprise accounts — targeting those most at risk of churning.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. RESEARCH -->
+<section id="s3" data-label="Research">
+  <span class="slide-no">SLIDE 6 / 10</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Research · Competitive Workaround &amp; Journey</div>
+      <h2 class="title-lg">The rival isn't a product — it's the WhatsApp group</h2>
+    </div>
+
+    <div class="two" style="grid-template-columns:0.95fr 1.05fr">
+      <div class="grid" style="align-content:start">
+        <div class="card tile">
+          <div class="kicker" style="color:var(--cyan);margin-bottom:8px">Who / Goal / Friction</div>
+          <p class="small"><span class="hlc">Who —</span> a mid-size 3PL dispatcher keeping a live fleet routed correctly and knowing, in real time, where every stop stands.</p>
+          <p class="small" style="margin-top:8px"><span class="hlc">Goal —</span> reassign routes and read accurate delivery status off a single trustworthy board, without a phone in the other hand.</p>
+          <p class="small" style="margin-top:8px"><span class="hl">Friction —</span> the board lies to them. Reassignments take 8–15 min with no push (BUG-2044); completed stops read "in progress" for up to an hour (BUG-2072).</p>
+        </div>
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px">External tools they're forced into (the workaround)</div>
+          <div class="pills">
+            <span class="pill dot">WhatsApp group = "the real system" (UXR-02)</span>
+            <span class="pill dot">Direct voice calls to office/drivers (UXR-03)</span>
+            <span class="pill dot">Inbound driver texts, manually logged (UXR-01)</span>
+          </div>
+          <p class="small" style="margin-top:14px">They run WhatsApp and the app as <span class="hl">two parallel systems all shift</span> — make the change in-app, distrust it, re-send over WhatsApp, wait for a manual reply, then ping each driver to confirm true stop status.</p>
+        </div>
+        <div class="card">
+          <div class="kicker" style="color:var(--pink);margin-bottom:8px">The evidence that proves it</div>
+          <p class="evidence-q">"We keep a WhatsApp group as the real system." <span class="mono" style="color:var(--muted);font-style:normal;font-size:11px">— UXR-02</span></p>
+          <p class="evidence-q" style="margin-top:8px">"A stop shows 'in progress' when it was delivered an hour ago. I can't trust the board." <span class="mono" style="color:var(--muted);font-style:normal;font-size:11px">— UXR-09</span></p>
+          <p class="tagline">Supporting bugs: BUG-2044 (reassign 8–15 min, no push) · BUG-2072 (status lag 20–60 min)</p>
+        </div>
+      </div>
+
+      <div class="grid" style="align-content:start">
+        <div class="card tile">
+          <div class="kicker" style="margin-bottom:6px">Competitive read</div>
+          <p class="small">Complexity was cited by <span class="hl">4 of 5</span> churning accounts (was 1 of 8). Leaner rivals are actively trialed on our largest, most at-risk enterprise contracts — the threat is not a feature gap, it's the trust gap that pushed coordination off-platform.</p>
+        </div>
+
+        <div class="card" style="padding:22px">
+          <div class="eyebrow" style="margin-bottom:4px">Journey map — the moment of misery</div>
+          <p class="tagline" style="margin-bottom:2px">routelogic-velocity-future-state.html</p>
+          <div class="journey">
+            <div class="jstep"><span class="dotmark"></span><div class="num">01</div><div class="t">Reassign in-app</div><div class="d">Commit the change — then immediately distrust it (8–15 min lag, no notification).</div></div>
+            <div class="jstep"><span class="dotmark"></span><div class="num">02</div><div class="t">Re-send on WhatsApp</div><div class="d">Send the same change so the driver sees it now; wait for a manual reply.</div></div>
+            <div class="jstep misery"><span class="dotmark"></span><div class="num">03</div><div class="t">"Where is everything?"</div><div class="d">Look at the board to answer — and know the answer can't be trusted.<div class="misery-flag">● MOMENT OF MISERY</div></div></div>
+            <div class="jstep"><span class="dotmark"></span><div class="num">04</div><div class="t">Ping each driver</div><div class="d">Confirm actual stop status; hold the true state in the chat thread or their head.</div></div>
+            <div class="jstep"><span class="dotmark"></span><div class="num">05</div><div class="t">Repeat, all shift</div><div class="d">Per driver, per stop, continuously — two systems running side by side.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. BLUEPRINT -->
+<section id="s4" data-label="Blueprint">
+  <span class="slide-no">SLIDE 7 / 10</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Blueprint · Roadmap · PRD · Prototype</div>
+      <h2 class="title-lg">Driver Alert Notifications — the smallest fix worth shipping</h2>
+    </div>
+
+    <div class="two" style="grid-template-columns:1.15fr 0.85fr">
+      <div class="grid" style="align-content:start">
+        <div class="card tile">
+          <div class="kicker" style="margin-bottom:14px">MoSCoW — Now scope</div>
+          <div class="cols three" style="gap:16px">
+            <div>
+              <div class="col-head"><span class="tag" style="color:var(--teal);background:rgba(52,211,153,0.12)">MUST</span></div>
+              <div class="item">Trigger on route-change / reassignment</div>
+              <div class="item">Targeted push to affected driver(s)</div>
+              <div class="item">Actionable payload: what changed + when</div>
+              <div class="item">One-tap "Got it" acknowledgement</div>
+              <div class="item">Delivery-failure surfaced to coordinator</div>
+              <div class="item">Push-token registration + permissions</div>
+            </div>
+            <div>
+              <div class="col-head"><span class="tag" style="color:var(--orange-soft);background:rgba(251,146,60,0.12)">SHOULD</span></div>
+              <div class="item">Real-time ack state on board (polling gets 80%+ of value)</div>
+              <div class="item">One-tap "Got it" (Ack-on-Open is cheaper &amp; more reliable)</div>
+            </div>
+            <div>
+              <div class="col-head"><span class="tag" style="color:var(--pink);background:rgba(244,114,182,0.12)">WON'T (NOW)</span></div>
+              <div class="item">Compliance-flag alerts</div>
+              <div class="item">Two-way chat / driver-initiated requests</div>
+              <div class="item">Email / SMS · iOS second platform</div>
+              <div class="item">Manager / exec dashboards</div>
+            </div>
+          </div>
+          <p class="tagline" style="margin-top:14px">Roadmap: 04-roadmap/routelogic-velocity-roadmap.html</p>
+        </div>
+
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px">PRD highlights — B6 Driver Alert Notifications</div>
+          <p class="small"><span class="hl">Vision —</span> every reassignment reaches the affected driver and comes back confirmed in under a minute, so the coordinator trusts the board and never opens WhatsApp to check.</p>
+          <div class="three" style="margin-top:14px;gap:12px">
+            <div class="card" style="padding:14px 16px"><div class="kicker" style="font-size:10px">Screen 1 · Entry</div><p class="small" style="margin-top:6px;font-size:12.5px">Coordinator Board / Reassign — route list, status chips, driver picker, confirm modal.</p></div>
+            <div class="card" style="padding:14px 16px"><div class="kicker" style="font-size:10px">Screen 2 · Core</div><p class="small" style="margin-top:6px;font-size:12.5px">Driver Alert (phone) — simulated push, change summary, new stop + ETA, big "Got it".</p></div>
+            <div class="card" style="padding:14px 16px"><div class="kicker" style="font-size:10px">Screen 3 · Success</div><p class="small" style="margin-top:6px;font-size:12.5px">Ack Tracker — Sent→Delivered→Acknowledged, time-to-ack, "Confirmed — no follow-up".</p></div>
+          </div>
+          <div class="callout" style="margin-top:14px;font-size:13px">
+            <span class="hl">Made explicit that a vague brief would miss:</span> the alert isn't complete without a confirmed acknowledgement the coordinator can see on the board. The misery isn't the missing notification — it's not knowing the driver saw the change.
+          </div>
+          <div class="callout good" style="margin-top:12px;font-size:13px">
+            <span class="hlt">Gap the prototype revealed:</span> "amber = not acknowledged" fails on screen — you can't tell a 10-second wait from a 10-minute one. A <span class="hlt">"time since sent"</span> signal is a Must.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" style="align-content:start">
+        <div class="card tile" style="background:linear-gradient(160deg,rgba(251,146,60,0.10),rgba(255,255,255,0.02))">
+          <div class="eyebrow" style="margin-bottom:12px">Interactive prototype</div>
+          <p class="small">A high-fidelity, useState-only prototype of the three screens — Board / Reassign, Driver Alert, and the Ack Tracker.</p>
+          <a class="btn" style="margin-top:18px;width:100%;justify-content:center" href="https://lovable.dev/preview/PTPMDfnUTGPSNd61Xy8ugGhYBULXiKi6" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            View prototype
+          </a>
+          <a class="btn ghost" style="margin-top:12px;width:100%;justify-content:center;font-size:12px" href="https://lovable.dev/projects/804ec31c-c201-484f-b26b-04ae98d0688e?magic_link=mc_a6c98b54-5e39-4bb1-b137-dae750da559f" target="_blank" rel="noopener">Open project source ↗</a>
+        </div>
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px">Smart behaviours (situation → outcome)</div>
+          <div class="flow" style="margin-bottom:8px"><span class="small">Commit reassignment</span><span class="sep">→</span><span class="chip sent">Sent</span></div>
+          <div class="flow" style="margin-bottom:8px"><span class="small">Driver opens alert</span><span class="sep">→</span><span class="chip delivered">Delivered</span></div>
+          <div class="flow" style="margin-bottom:8px"><span class="small">Driver taps Got it</span><span class="sep">→</span><span class="chip ack">Acknowledged</span></div>
+          <p class="small" style="margin-top:8px;font-size:12.5px">Newer change supersedes; no ack ⇒ amber, <span class="hl">never a false green</span>. Missing field renders "—", never a guess.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. VALIDATION -->
+<section id="s5" data-label="Validation">
+  <span class="slide-no">SLIDE 8 / 10</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Validation · A/B Experiment Brief</div>
+      <h2 class="title-lg">One experiment, one number, one fixed read date</h2>
+    </div>
+
+    <div class="two" style="grid-template-columns:1fr 1fr">
+      <div class="grid" style="align-content:start">
+        <div class="card tile">
+          <div class="kicker" style="margin-bottom:12px">Hypothesis</div>
+          <p class="small">I believe <span class="hl">Driver Alert Notifications</span> for a mid-size 3PL Coordinator will bring live coordination onto the platform and cut daily wasted time in half — as measured by a <span class="hl">15% change</span> in reassignment→acknowledgement time (8–15 min → &lt;60s) within 90 days. We will protect Coordinator core-feature adoption (Board 91%, Optimizer 85%) throughout.</p>
+        </div>
+
+        <div class="two" style="grid-template-columns:1fr 1fr;gap:14px">
+          <div class="card" style="border-color:rgba(244,114,182,0.35)">
+            <div class="kicker" style="color:var(--pink);margin-bottom:8px">Control (A)</div>
+            <p class="small" style="font-size:12.5px">The board lies. Reassignment reaches the driver in 8–15 min with no push (BUG-2044); stops read "in progress" up to an hour → ~69% post-assignment abandonment.</p>
+          </div>
+          <div class="card" style="border-color:rgba(52,211,153,0.35)">
+            <div class="kicker" style="color:var(--teal);margin-bottom:8px">Variant (B)</div>
+            <p class="small" style="font-size:12.5px">Commit fires a targeted alert to the affected driver alone; board = Sent &lt;2s. Card shows what changed + ETA + timestamp; one "Got it" advances Sent→Delivered→Acknowledged on the board — no WhatsApp or phone step.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="kicker" style="margin-bottom:8px">Held constant (isolation check)</div>
+          <div class="flow small">
+            <span class="chip">Open RouteLogic</span><span class="sep">·</span>
+            <span class="chip">Load Fleet View</span><span class="sep">·</span>
+            <span class="chip">Assign via Optimizer</span><span class="sep">·</span>
+            <span class="chip">Log Compliance</span><span class="sep">·</span>
+            <span class="chip">Shift Handoff</span>
+          </div>
+          <p class="tagline" style="margin-top:10px">All earlier and later steps in the workflow are unchanged.</p>
+        </div>
+      </div>
+
+      <div class="grid" style="align-content:start">
+        <div class="card tile">
+          <div class="kicker" style="margin-bottom:6px">Parameters</div>
+          <table>
+            <tr><th>Parameter</th><th>Decision</th></tr>
+            <tr><td>Primary metric</td><td class="metric">Reassign→ack time <span class="arrow">8–15 min → &lt;60s</span></td></tr>
+            <tr><td>Baseline</td><td class="metric">8–15 min</td></tr>
+            <tr><td>MDE</td><td class="metric">15%</td></tr>
+            <tr><td>Guardrail</td><td class="metric">Board 91% / Optimizer 85% — must not drop</td></tr>
+            <tr><td>2nd guardrail</td><td class="metric">Manager Reporting CSAT 4.5 — must not drop</td></tr>
+            <tr><td>Sample / arm</td><td class="metric">165</td></tr>
+            <tr><td>Duration</td><td class="metric">90 days</td></tr>
+            <tr><td>Significance</td><td class="metric">p &lt; 0.05</td></tr>
+          </table>
+        </div>
+
+        <div class="card" style="border-color:var(--line)">
+          <div class="kicker" style="margin-bottom:10px">Ship / iterate / kill rules</div>
+          <div class="rule-row"><span class="rule-badge ship">SHIP</span><p class="small" style="font-size:12.5px">Primary metric improves ≥ 15% at p&lt;0.05 and guardrails do not drop after 90 days.</p></div>
+          <div class="rule-row"><span class="rule-badge iterate">ITERATE</span><p class="small" style="font-size:12.5px">Direction is positive but lift is below the MDE.</p></div>
+          <div class="rule-row"><span class="rule-badge kill">KILL</span><p class="small" style="font-size:12.5px">Primary metric shows no improvement or moves negatively.</p></div>
+          <p class="tagline" style="margin-top:10px">Read date fixed at end of 90 days — no results reviewed before.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. LAUNCH -->
+<section id="s6" data-label="Launch">
+  <span class="slide-no">SLIDE 9 / 10</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Launch · GTM &amp; Success Dashboard</div>
+      <h2 class="title-lg">A quiet, owned-channel retention launch</h2>
+    </div>
+
+    <div class="two" style="grid-template-columns:0.9fr 1.1fr">
+      <div class="grid" style="align-content:start">
+        <div class="card tile">
+          <div class="three" style="gap:14px">
+            <div><div class="kicker" style="font-size:10px">Goal</div><p class="small" style="margin-top:5px;font-size:12.5px"><span class="hl">Engagement</span> — a retention play on existing customers.</p></div>
+            <div><div class="kicker" style="font-size:10px">Audience</div><p class="small" style="margin-top:5px;font-size:12.5px">Frontline dispatchers at 2–3 pilot accounts + the at-risk cohort; ops managers who own renewal.</p></div>
+            <div><div class="kicker" style="font-size:10px">Tier / Size</div><p class="small" style="margin-top:5px;font-size:12.5px"><span class="hl">M, targeted.</span> Small reach on purpose — biggest, most at-risk contracts.</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="kicker" style="margin-bottom:10px">Channels — all owned</div>
+          <div class="pills">
+            <span class="pill dot">In-app notification + walkthrough</span>
+            <span class="pill dot">Customer newsletter &amp; admin update</span>
+            <span class="pill dot">Direct 1:1 CSM outreach</span>
+            <span class="pill dot" style="border-style:dashed;opacity:.7">Paid / earned — add little</span>
+          </div>
+          <p class="small" style="margin-top:14px;font-size:12.5px"><span class="hl">Timeline —</span> Phase 1: 90-day beta, instrumented day one. Phase 2: launch at the 90-day read — if the gate is met, roll to the wider cohort. Phase 3: 30–60 days monitoring, expand to GA, retire WhatsApp messaging.</p>
+        </div>
+        <div class="callout bad">
+          <div class="kicker" style="color:var(--pink);margin-bottom:6px">Bad signal to watch for</div>
+          People opening the announcement and finishing the walkthrough while adoption stays flat and WhatsApp keeps running — the message landed but the trust didn't.
+        </div>
+      </div>
+
+      <div class="card tile" style="align-self:start">
+        <div class="kicker" style="margin-bottom:6px">Success dashboard</div>
+        <table>
+          <tr><th>KPI</th><th>Type</th><th>Baseline</th><th>Target</th><th>Window</th></tr>
+          <tr><td>Alert-flow adoption</td><td>GTM · engagement</td><td class="metric">0%</td><td class="metric">70%+</td><td>First 30d</td></tr>
+          <tr><td>Ack-on-board usage</td><td>GTM · engagement</td><td class="metric">~0%</td><td class="metric">60%+, rising</td><td>Rolling 30d</td></tr>
+          <tr><td>Announcement → walkthrough</td><td>GTM · engagement</td><td class="metric">0%</td><td class="metric">50%+</td><td>First 14d</td></tr>
+          <tr><td>Reassign → ack time (median)</td><td style="color:var(--orange-soft)">North-star</td><td class="metric">8–15 min</td><td class="metric">&lt;60s</td><td>90-day pilot</td></tr>
+          <tr><td>Workflow completion (Open→Handoff)</td><td>Outcome</td><td class="metric">31%</td><td class="metric">65%+</td><td>90-day pilot</td></tr>
+          <tr><td>Core-feature adoption (Board / Optimizer)</td><td style="color:var(--teal)">Guardrail</td><td class="metric">91% / 85%</td><td class="metric">Must not drop</td><td>Throughout</td></tr>
+        </table>
+        <p class="small" style="margin-top:14px;font-size:12.5px"><span class="hl">Post-launch call —</span> most likely double down, triggered by the 90-day read hitting ack-time &lt;60s at ≥15% lift (p&lt;0.05) with guardrails holding. Iterate if direction is right but under the MDE; pull back if the guardrail drops.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. STORY -->
+<section id="s7" data-label="Story">
+  <span class="slide-no">SLIDE 10 / 10</span>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Story · Reflection &amp; What's Next</div>
+      <h2 class="title-lg">Friction, the aha, and the road ahead</h2>
+    </div>
+
+    <div class="three">
+      <div class="card tile">
+        <div class="kicker" style="color:var(--pink);margin-bottom:10px">Friction points</div>
+        <p class="small" style="font-size:13px">The hardest part was the tension between the user and the buyer. Anything good for the frontline coordinator risks touching the backend depth admins pay for, so I carried guardrails (Board &amp; Optimizer adoption, manager CSAT) the whole way. Naming that trade-off up front — rather than finding it after launch — was the useful bit.</p>
+      </div>
+      <div class="card tile">
+        <div class="kicker" style="color:var(--orange-soft);margin-bottom:10px">Key learning</div>
+        <p class="small" style="font-size:13px">How much the <span class="hl">WON'T HAVE list</span> did for the project. The decisions that protected this launch were the things I said no to. Cutting compliance-flag alerts — even though they're half the feature's name — kept the pilot small enough to actually ship and measure. I'd never thought of "no" as the deliverable before.</p>
+      </div>
+      <div class="card tile">
+        <div class="kicker" style="color:var(--cyan);margin-bottom:10px">Aha! moment</div>
+        <p class="small" style="font-size:13px">How fast we could pull a pile of messy, disparate inputs — bugs, interview quotes, funnel numbers, CSAT, churn notes — into sense. Normally days of stitching; with AI in the loop I reconciled the qual and the quant in a fraction of the time, and drilled past the noise to <span class="hlc">one cheap, specific win</span> rather than a vague "the product feels bloated".</p>
+      </div>
+    </div>
+
+    <div class="two" style="grid-template-columns:1fr 1fr;margin-top:20px">
+      <div class="callout good">
+        <div class="kicker" style="color:var(--teal);margin-bottom:6px">Key takeaway</div>
+        The big one: I wasn't up against a rival product, I was up against the <span class="hlt">WhatsApp group they'd set up on the side</span>. Sort that out and the rest falls into place — and I didn't need anything clever, just the smallest fix I could stand behind. The guardrails kept me honest, and the prototype showed me "amber" is useless without a sense of how long you've been waiting.
+      </div>
+      <div class="callout">
+        <div class="kicker" style="margin-bottom:6px">What I'd do next</div>
+        Run the 90-day pilot and sit tight until the read date. First job after: the gap the prototype found — a <span class="hl">"time since sent"</span> on every alert. If it clears the bar, bring back the demoted bits (live ack status, one-tap "Got it"), then work down the roadmap — compliance alerts, then two-way updates.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. THANK YOU / SUBMIT -->
+<section id="s8" data-label="Submit" class="thanks">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center">Product School · Final Project</div>
+    <h2>Thank you.</h2>
+    <p class="pitch" style="margin:22px auto 0;max-width:56ch;color:var(--muted-strong);font-size:20px">RouteLogic Velocity — a frontline-first dispatch view that turns the board back into the source of truth.</p>
+
+    <div class="cta" style="justify-content:center;margin-top:30px">
+      <a class="btn ghost" href="https://github.com/cncontentdesign/pm-final-project/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+        github.com/cncontentdesign/pm-final-project
+      </a>
+      <a class="btn" href="https://lovable.dev/preview/PTPMDfnUTGPSNd61Xy8ugGhYBULXiKi6" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        View prototype
+      </a>
+    </div>
+
+    <div style="margin-top:30px">
+      <span class="submit-pill">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>
+        Submit to the learning platform
+      </span>
+    </div>
+    <p class="tagline" style="margin-top:22px">Chris Newland · Cohort Product-management-aug03-26-weekdays</p>
+  </div>
+</section>
+
+<script>
+  const sections = Array.from(document.querySelectorAll('section'));
+  const dots = document.getElementById('dots');
+  const bar = document.getElementById('progress');
+
+  // build dot nav
+  sections.forEach((s,i)=>{
+    const a = document.createElement('a');
+    a.href = '#'+s.id;
+    a.innerHTML = '<span>'+(s.dataset.label||('0'+(i+1)))+'</span>';
+    a.addEventListener('click',e=>{e.preventDefault();s.scrollIntoView({behavior:'smooth'});});
+    dots.appendChild(a);
+  });
+  const dotEls = Array.from(dots.children);
+
+  // progress + active dot
+  function onScroll(){
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (h>0 ? (window.scrollY/h*100) : 0) + '%';
+    let idx = 0, best = Infinity;
+    sections.forEach((s,i)=>{
+      const d = Math.abs(s.getBoundingClientRect().top);
+      if(d<best){best=d;idx=i;}
+    });
+    dotEls.forEach((d,i)=>d.classList.toggle('active', i===idx));
+    current = idx;
+  }
+  let current = 0;
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  function go(i){
+    i = Math.max(0, Math.min(sections.length-1, i));
+    sections[i].scrollIntoView({behavior:'smooth'});
+  }
+  document.addEventListener('keydown', e=>{
+    switch(e.key){
+      case 'ArrowDown': case ' ': case 'PageDown': e.preventDefault(); go(current+1); break;
+      case 'ArrowUp': case 'PageUp': e.preventDefault(); go(current-1); break;
+      case 'Home': e.preventDefault(); go(0); break;
+      case 'End': e.preventDefault(); go(sections.length-1); break;
+      case 'Escape': e.preventDefault(); go(0); break;
+    }
+  });
+</script>
+</body>
+</html>
